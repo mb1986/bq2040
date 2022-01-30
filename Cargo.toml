@@ -1,0 +1,13 @@
+[package]
+name = "bq2040"
+description = """
+Lists selected parameters, values and corresponding descriptions for bq2040 configuration.
+"""
+version = "0.1.0"
+authors = ["Michał Blinkiewicz <michal.blinkiewicz@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+byteorder = "1"
+paste = "1.0"
+clap = { version = "3.0.13", features = ["derive"] }
