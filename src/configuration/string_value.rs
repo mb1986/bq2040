@@ -4,9 +4,39 @@ pub(crate) struct StringValue {
     pub units: &'static str,
 }
 
+macro_rules! fn_internal8 {
+    ( $units:literal, $data:ident, $type:ident $(, $op:expr )? ) => {{
+        let mut slice = $data;
+        paste! {
+            let value = slice.[<read_ $type>]().unwrap()$(. $op )?;
+        }
+        StringValue {
+            hex: format!("{:#04x}", &value),
+            usr: format!("{}", &value),
+            units: $units,
+        }
+    }};
+}
+
+macro_rules! fn_internal16 {
+    ( $units:literal, $data:ident, $type:ident $(, $op:expr )? $(; $fun:expr )? ) => {{
+        let mut slice = $data;
+        paste! {
+            let value = slice.[<read_ $type>]::<LittleEndian>().unwrap()$(. $op )?;
+        }
+        StringValue {
+            hex: format!("{:#06x}", &value),
+            usr: format!("{}", &$( $fun )?(&value)),
+            units: $units,
+        }
+    }};
+}
+
 macro_rules! fn_value_as_string_u8 {
     () => {
-        fn_value_as_string_u8!("", "");
+        fn value_as_string_u8(_: &ConfigurationParameter, data: &[u8]) -> StringValue {
+            fn_internal8!( "", data, u8 )
+        }
     };
 
     ( $units:literal ) => {
@@ -16,23 +46,13 @@ macro_rules! fn_value_as_string_u8 {
     ( $name:literal, $units:literal ) => {
         paste! {
             fn [<value_as_string_ $name _u8>](_: &ConfigurationParameter, data: &[u8]) -> StringValue {
-                let mut slice = data;
-                let value = slice.read_u8().unwrap();
-                StringValue {
-                    hex: format!("{:#04x}", &value),
-                    usr: format!("{}", &value),
-                    units: $units,
-                }
+                fn_internal8!( $units, data, u8 )
             }
         }
     };
 }
 
 macro_rules! fn_value_as_string_i8 {
-    () => {
-        fn_value_as_string_i8!("", "");
-    };
-
     ( $units:literal ) => {
         fn_value_as_string_i8!($units, $units);
     };
@@ -40,31 +60,23 @@ macro_rules! fn_value_as_string_i8 {
     ( $name:literal, $units:literal ) => {
         paste! {
             fn [<value_as_string_ $name _i8>](_: &ConfigurationParameter, data: &[u8]) -> StringValue {
-                let mut slice = data;
-                let value = slice.read_i8().unwrap().unsigned_abs();
-                StringValue {
-                    hex: format!("{:#04x}", &value),
-                    usr: format!("{}", &value),
-                    units: $units,
-                }
+                fn_internal8!( $units, data, i8, unsigned_abs() )
             }
         }
     };
 }
 
 macro_rules! fn_value_as_string_u16 {
-    () => { fn_value_as_string_u16!(""); };
+    () => {
+        fn value_as_string_u16(_: &ConfigurationParameter, data: &[u8]) -> StringValue {
+            fn_internal16!( "", data, u16 )
+        }
+    };
 
     ( $units:literal ) => {
         paste! {
             fn [<value_as_string_ $units:lower _u16>](_: &ConfigurationParameter, data: &[u8]) -> StringValue {
-                let mut slice = data;
-                let value = slice.read_u16::<LittleEndian>().unwrap();
-                StringValue {
-                    hex: format!("{:#06x}", &value),
-                    usr: format!("{}", &value),
-                    units: $units,
-                }
+                fn_internal16!( $units, data, u16 )
             }
         }
     };
@@ -72,32 +84,17 @@ macro_rules! fn_value_as_string_u16 {
     ( $units:literal, $fun:expr ) => {
         paste! {
             fn [<value_as_string_ $units:lower _u16>](_: &ConfigurationParameter, data: &[u8]) -> StringValue {
-                let mut slice = data;
-                let value = slice.read_u16::<LittleEndian>().unwrap();
-                let str_val = $fun(&value);
-                StringValue {
-                    hex: format!("{:#06x}", &value),
-                    usr: format!("{}", &str_val),
-                    units: "",
-                }
+                fn_internal16!( "", data, u16; $fun )
             }
         }
     };
 }
 
 macro_rules! fn_value_as_string_i16 {
-    () => { fn_value_as_string_i16!(""); };
-
     ( $units:literal ) => {
         paste! {
             fn [<value_as_string_ $units:lower _i16>](_: &ConfigurationParameter, data: &[u8]) -> StringValue {
-                let mut slice = data;
-                let value = slice.read_i16::<LittleEndian>().unwrap().unsigned_abs();
-                StringValue {
-                    hex: format!("{:#06x}", &value),
-                    usr: format!("{}", &value),
-                    units: $units,
-                }
+                fn_internal16!( $units, data, i16, unsigned_abs() )
             }
         }
     };
@@ -115,11 +112,11 @@ macro_rules! fn_value_as_string {
 
 macro_rules! value_as_string {
     ( 1, ) => {
-        value_as_string__u8
+        value_as_string_u8
     };
 
     ( 2, ) => {
-        value_as_string__u16
+        value_as_string_u16
     };
 
     ( 1, $units:ident ) => {
@@ -144,6 +141,6 @@ macro_rules! value_as_string {
 }
 
 pub(crate) use {
-    fn_value_as_string, fn_value_as_string_i16, fn_value_as_string_i8, fn_value_as_string_u16,
-    fn_value_as_string_u8, value_as_string,
+    fn_internal16, fn_internal8, fn_value_as_string, fn_value_as_string_i16, fn_value_as_string_i8,
+    fn_value_as_string_u16, fn_value_as_string_u8, value_as_string,
 };
