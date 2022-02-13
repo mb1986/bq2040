@@ -8,11 +8,12 @@ macro_rules! fn_internal8 {
     ( $units:literal, $data:ident, $type:ident $(, $op:expr )? ) => {{
         let mut slice = $data;
         paste! {
-            let value = slice.[<read_ $type>]().unwrap()$(. $op )?;
+            let raw = slice.[<read_ $type>]().unwrap();
+            let usr = raw$(. $op )?;
         }
         StringValue {
-            hex: format!("{:#04x}", &value),
-            usr: format!("{}", &value),
+            hex: format!("{:#04x}", &raw),
+            usr: format!("{}", &usr),
             units: $units,
         }
     }};
@@ -22,11 +23,12 @@ macro_rules! fn_internal16 {
     ( $units:literal, $data:ident, $type:ident $(, $op:expr )? $(; $fun:expr )? ) => {{
         let mut slice = $data;
         paste! {
-            let value = slice.[<read_ $type>]::<LittleEndian>().unwrap()$(. $op )?;
+            let raw = slice.[<read_ $type>]::<LittleEndian>().unwrap();
+            let usr = raw$(. $op )?;
         }
         StringValue {
-            hex: format!("{:#06x}", &value),
-            usr: format!("{}", &$( $fun )?(&value)),
+            hex: format!("{:#06x}", &raw),
+            usr: format!("{}", &$( $fun )?(&usr)),
             units: $units,
         }
     }};
