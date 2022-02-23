@@ -20,7 +20,7 @@ fn print_param(data: &Vec<u8>, param: &ConfigurationParameter) {
     let str_val = param.value_as_string(slice);
 
     println!(
-        "{:30} ({:#04x}): {:6} [ {:>12} {:3} ] - {}",
+        "{:31} ({:#04x}): {:6} [ {:>12} {:3} ] - {}",
         param.name, param.address, str_val.hex, str_val.usr, str_val.units, param.description
     );
 }

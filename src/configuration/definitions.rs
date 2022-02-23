@@ -17,7 +17,7 @@ parameters!(
     CYCLE_COUNT, "Cycle count", 0x0e, 2, "Initializes and stores cycle count",
     DESIGN_CAPACITY, "Design capacity", 0x10, 2, mAh, "Sets design capacity",
     DESIGN_VOLTAGE, "Design voltage", 0x12, 2, mV, "Sets design voltage",
-
+    SPECIFICATION_INFORMATION, "Specification information", 0x14, 2, "Programs Specification Info",
     MANUFACTURE_DATE, "Manufacture date", 0x16, 2, date, "Programs manufacture date",
     SERIAL_NUMBER, "Serial number", 0x18, 2, "Programs serial number",
     FAST_CHARGING_CURRENT, "Fast-charging current", 0x1a, 2, mA, "Sets charging current",
@@ -31,20 +31,28 @@ parameters!(
     LION_TAPER_CURRENT, "Li-Ion taper current", 0x38, -2, mA, "Sets the upper limit of the taper current for charge termination",
     MAXIMUM_OVERCHARGE_LIMIT, "Maximum overcharge limit", 0x3a, -2, mA, "Sets the maximum amount of overcharge",
     RESERVED_4, "Reserved", 0x3c, 1, "Reserved, must be 0x00",
-
+    ACCESS_PROTECT, "Access protect", 0x3d, 1, "Locks commands outside of the SBS data set",
+    FLAGS_1, "FLAGS1", 0x3e, 1, "Initializes FLAGS1",
+    FLAGS_2, "FLAGS2", 0x3f, 1, "Initializes FLAGS2",
     DEVICE_CHEMISTRY, "Device chemistry", 0x40, 6, text, "Programs device chemistry",
-
+    CURRENT_MEASUREMENT_GAIN, "Current measurement gain", 0x46, 2, "Sense resistor calibration value",
+    BATTERY_VOLTAGE_OFFSET, "Battery voltage offset", 0x48, 1, "Voltage calibration value",
+    TEMPERATURE_OFFSET, "Temperature offset", 0x49, 1, "Temperature calibration value",
+    MAXIMUM_TEMPERATURE_AND_DELTA_T_STEP, "Maximum temperature and ΔT step", 0x4a, 1, "Test the maximum charge temperature and the ΔT step for ΔT/Δt termination",
+    CHARGE_EFFICIENCY, "Charge efficiency", 0x4b, 1, "Sets the high/low charge rate efficiencies",
     FULL_CHARGE_PERCENTAGE, "Full-charge percentage", 0x4c, -1, percent, "Sets the percent at which the battery is considered fully charged",
-
+    DIGITAL_FILTER, "Digital filter", 0x4d, 1, "Sets the minimum charge/discharge threshold",
+    CURRENT_INTEGRATION_GAIN, "Current integration gain", 0x4e, 1, "Programs the current integration gain to the sense resistor value",
     SELF_DISCHARGE_RATE, "Self-discharge rate", 0x4f, 1, "Sets the battery's self-discharge rate", // func
     MANUFACTURER_DATA, "Manufacturer data", 0x50, 6, text, "Programs manufacturer data",
-
+    VOLTAGE_GAIN_1, "Voltage gain1", 0x56, 2, "Battery divider calibration value",
     RESERVED_5, "Reserved", 0x58, 2, "Reserved, should be programmed to 0",
     EDVF_CHARGING_CURRENT, "EDVF charging current", 0x5a, 2, mA, "Sets the charge current request when battery voltage is less than EDVF",
     END_OF_DISCHARGE_VOLTAGE, "End of discharge voltage 1", 0x5c, -2, mV, "Sets EDV1",
     END_OF_DISCHARGE_VOLTAGE_FINAL, "End of discharge voltage final", 0x5e, -2, mV, "Sets EDVF",
     FULL_CHARGE_CAPACITY, "Full-charge capacity", 0x60, 2, mAh, "Initializes and stores full-charge capacity",
-
+    DELTA_T_STEP, "Δt step", 0x62, 1, "Sets the Δt step for ΔT/Δt termination",
+    HOLD_OFF_TIME, "Hold-off time", 0x63, 1, "Sets ΔT/Δt hold-off timer",
     EEPROM_CHECK_2, "EEPROM check2", 0x64, 1, "Must be equal to 0xb5",
 );
 
